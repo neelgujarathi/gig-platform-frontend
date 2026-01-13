@@ -13,7 +13,6 @@ export default function AppNavbar() {
   };
 
   return (
-    // ✅ Blue background with white text
     <Navbar bg="primary" variant="dark" expand="lg">
       <Container>
         <Navbar.Brand
@@ -35,7 +34,7 @@ export default function AppNavbar() {
                 <Nav.Link as={Link} to="/post-gig" className="text-white">
                   Post Gig
                 </Nav.Link>
-                {/* ✅ Added My Gigs link */}
+                {/*Added My Gigs link */}
                 <Nav.Link as={Link} to="/my-gigs" className="text-white">
                   My Gigs
                 </Nav.Link>

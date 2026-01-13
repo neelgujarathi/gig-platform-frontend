@@ -16,11 +16,9 @@ export default function MyGigs() {
 
       if (user.role === "client") {
         const res = await API.get("/gigs");
-        // ⚡ convert ObjectId to string for comparison
         setGigs(res.data.filter((g) => g.ownerId.toString() === user._id));
       } else {
         const res = await API.get("/gigs/my-bids");
-        // ⚡ map bid → gig info with correct ID
         setGigs(res.data.map((b) => ({
           _id: b.gigId?._id,
           title: b.gigId?.title || b.gigTitle,
@@ -30,16 +28,11 @@ export default function MyGigs() {
           status: b.gigId?.status || "open",
         })));
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    fetchMyGigs();
-  }, [user]);
+  useEffect(() => { fetchMyGigs(); }, [user]);
 
   if (loading) return (
     <div className="text-center mt-5">
@@ -52,13 +45,11 @@ export default function MyGigs() {
     <div className="container mt-4">
       <h3 className="mb-3">{user?.role === "client" ? "My Gigs" : "My Bids"}</h3>
       <Row>
-        {gigs.length > 0 ? (
-          gigs.map((gig) => (
-            <Col md={6} lg={4} key={gig._id}>
-              <GigCard gig={gig} refreshGigs={fetchMyGigs} />
-            </Col>
-          ))
-        ) : (
+        {gigs.length > 0 ? gigs.map((gig) => (
+          <Col md={6} lg={4} key={gig._id}>
+            <GigCard gig={gig} refreshGigs={fetchMyGigs} />
+          </Col>
+        )) : (
           <p className="text-muted text-center">No gigs found</p>
         )}
       </Row>

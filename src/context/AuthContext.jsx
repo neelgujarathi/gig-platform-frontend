@@ -10,29 +10,30 @@ let socket;
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // ✅ Auto-login from backend JWT cookie
+  //Fetch current logged-in user
   const fetchCurrentUser = async () => {
     try {
-      const res = await API.get("/auth/me"); // new endpoint
+      const res = await API.get("/auth/me");
       setUser(res.data.user);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-    } catch (err) {
+    } catch {
       console.log("No active session");
     }
   };
 
-  useEffect(() => {
-    fetchCurrentUser();
-  }, []);
+  useEffect(() => fetchCurrentUser(), []);
 
   useEffect(() => {
     if (!user) return;
-
     if (socket) socket.disconnect();
 
-    socket = io("http://localhost:5000", { withCredentials: true });
+    socket = io(import.meta.env.VITE_API_URL?.replace("/api", "") || "https://gig-platform-backend.onrender.com", {
+      withCredentials: true,
+      path: "/socket.io",
+    });
 
     socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
       socket.emit("registerUser", user._id.toString());
     });
 
@@ -63,7 +64,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await API.post("/auth/logout"); // optional: clear cookie on backend
+    await API.post("/auth/logout");
     setUser(null);
     localStorage.removeItem("user");
     toast.info("Logged out successfully");
